@@ -45,6 +45,15 @@ jobs:
           # Keep this repo's CNAME (वेब.कंसल.भारत), whatever the main site has.
           git merge --no-ff --no-commit upstream/master || true
           git checkout HEAD -- CNAME
+          # Keep this repo's own workflows. The default token is not allowed
+          # to add or change workflow files, so leave out any from the main site.
+          git diff --cached --name-only HEAD -- .github | while read -r f; do
+            if git cat-file -e "HEAD:$f" 2>/dev/null; then
+              git checkout HEAD -- "$f"
+            else
+              git rm -q -f -- "$f"
+            fi
+          done
           if git diff --name-only --diff-filter=U | grep -q .; then
             echo "::error::Merge conflict. Please sync this repo by hand."
             git diff --name-only --diff-filter=U

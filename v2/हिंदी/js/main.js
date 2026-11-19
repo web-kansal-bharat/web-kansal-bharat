@@ -30,6 +30,7 @@ $('.menu-toggle').on("click", function () {
     $('#site_header').addClass('animate');
     $('#site_header').toggleClass('mobile-menu-hide');
     $('.menu-toggle').toggleClass('open');
+    $('.menu-toggle').attr('aria-expanded', $('.menu-toggle').hasClass('open'));
 });
 
 // Mobile menu hide on main menu item click
@@ -44,7 +45,7 @@ $('.main-menu').on("click", "a", function (e) {
 
         if (windowWidth < 1025) {
             siteHeader.addClass('mobile-menu-hide');
-            $('.menu-toggle').removeClass('open');
+            $('.menu-toggle').removeClass('open').attr('aria-expanded', 'false');
             setTimeout(function(){
                 siteHeader.addClass('animate');
             }, 500);
@@ -174,12 +175,16 @@ $(window).resize(customScroll);
 
         // Blog grid init
         var $container = $(".blog-masonry");
-        $container.imagesLoaded(function(){
-            $container.masonry();
-        });
+        if ($container.length && $.fn.masonry) {
+            $container.imagesLoaded(function(){
+                $container.masonry();
+            });
+        }
 
         customScroll();
 
+        // Owl Carousel is no longer loaded; keep this only for pages that add it back
+        if ($.fn.owlCarousel) {
         // Text rotation
         $('.text-rotation').owlCarousel({
             loop: true,
@@ -245,6 +250,7 @@ $(window).resize(customScroll);
                 }
             }
         });
+        }
 
 
         //Form Controls
